@@ -18,7 +18,7 @@ jobs:
         run: tar -czf deploy.tar.gz .
 
       - name: Copy Tar Archive to Ubuntu Server
-        uses: appleboy/ssh-action@v2
+        uses: appleboy/ssh-action@v1.0
         with:
           host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
