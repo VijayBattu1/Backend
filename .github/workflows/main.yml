@@ -4,35 +4,35 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   deploy:
+    name: Deploy to Ubuntu Server
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Create Tar Archive
+        run: tar -czf deploy.tar.gz .
 
-        - name: Set up Node.js
-        uses: actions/setup-node@v4  # Use the latest version compatible with Node.js 16
-        with:
-          node-version: '16'
-
-      - name: Install Dependencies
-        run: npm install  # or yarn install, depending on your project
-
-      - name: Deploy to Ubuntu Server
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Copy Tar Archive to Ubuntu Server
+        uses: appleboy/ssh-action@v2
         with:
           host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Add your deployment commands here
-            cd /var/www/html/vijay
-            git pull origin main
-            # Additional deployment steps as needed
+           
+            scp -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }}:/home
+
+      - name: Extract Tar Archive on Ubuntu Server
+        uses: appleboy/ssh-action@v2
+        with:
+          host: ${{ secrets.HOST_DNS }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home
+            tar -xzf deploy.tar.gz
