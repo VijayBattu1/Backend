@@ -23,13 +23,10 @@ jobs:
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
 
-  execute-commands:
-    name: Execute Remote SSH Commands
-    runs-on: ubuntu-latest
-
+ 
     steps:
       - name: Execute remote SSH commands using ssh key
-        uses: VijayBattu1/Backend@main
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
