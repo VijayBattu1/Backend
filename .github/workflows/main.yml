@@ -12,13 +12,13 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v1.0
+        uses: actions/checkout@latest
 
       - name: Create Tar Archive
         run: tar -czf deploy.tar.gz .
 
       - name: Copy Tar Archive to Ubuntu Server
-        uses: appleboy/ssh-action@v1.0
+        uses: appleboy/ssh-action@latest
         with:
           host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
