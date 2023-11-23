@@ -20,17 +20,17 @@ jobs:
       - name: Copy Tar Archive to Ubuntu Server
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.HOST_DNS }}
+          host: ${{ secrets.IP }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
            
-            scp -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }}:/home
+            scp -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.USERNAME }}@${{ secrets.IP }}:/home
 
       - name: Extract Tar Archive on Ubuntu Server
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.HOST_DNS }}
+          host: ${{ secrets.IP }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
