@@ -15,6 +15,9 @@ jobs:
       - name: Checkout the files
         uses: actions/checkout@v2
 
+      - name: Create Tar Archive
+        run: tar -czf deploy.tar.gz .
+
       - name: Deploy to Server 1
         uses: easingthemes/ssh-deploy@main
         env:
@@ -22,16 +25,8 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
-
-      - name: Executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST_DNS }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd home
-            sudo mv * /var/www/html
-          
+            scp -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST_DNS }}:/var/www/html/vijay/
+            tar -xzf deploy.tar.gz
             
            
