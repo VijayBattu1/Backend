@@ -1,5 +1,6 @@
-name: Deploy to Ubuntu Server1
+name: Push-to-EC2
 
+# Trigger deployment only on push to main branch
 on:
   push:
     branches:
@@ -7,32 +8,31 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Ubuntu Server
+    name: Deploy to EC2 on master branch push
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Checkout the files
+        uses: actions/checkout@v2
 
-      - name: Create Tar Archive
-        run: tar -czf deploy.tar.gz .
+      - name: Deploy to Server 1
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.HOST_DNS }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          TARGET: ${{ secrets.TARGET_DIR }}
 
-      - name: Copy Tar Archive to Ubuntu Server
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.IP }}
+          host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-           
-            scp -o StrictHostKeyChecking=no deploy.tar.gz ${{ secrets.USERNAME }}@${{ secrets.IP }}:/home
-
-      - name: Extract Tar Archive on Ubuntu Server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.IP }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home
-            tar -xzf deploy.tar.gz
+            sudo apt-get -y update
+            sudo apt-get install -y apache2
+            sudo systemctl start apache2
+            sudo systemctl enable apache2
+            cd home
+            sudo mv * /var/www/html
